@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '1598753',
+    password: '*Tami123',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -90,7 +90,7 @@ app.post('/vehiculos', async (req, res) => {
     console.log(año);
     console.log(idMarca);
     console.log(idTransmision);
- 
+
     try {
 
         const result = await sqlPool.request()
@@ -234,9 +234,7 @@ app.get('/paises', async (req, res) => {
 app.get('/color', async (req, res) => {
 
     console.log('SELECT COLORES');
-
     try {
-
         const result = await sqlPool.request()
             .query('SELECT * FROM Color');
 
@@ -247,6 +245,83 @@ app.get('/color', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+app.post('/color', async (req, res) => {
+    const { nombreColor } = req.body;
+    console.log('Insert color')
+    console.log(req.body);
+
+    try {
+
+        const result = await sqlPool.request()
+            .query(`INSERT INTO Color (nombreColor) VALUES ('${nombreColor}')`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Vehículo registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar el vehículo' });
+        }
+
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al insertar colores:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/color/:idColor', async (req, res) => {
+    const { idColor } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from Color where idColor = '${idColor}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Color eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar el color' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar colores:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/color/:idColor', async (req, res) => {
+    const {idColor} =req.params;
+    console.log('SELECT COLORES');
+    try {
+        const result = await sqlPool.request()
+            .query(`SELECT * FROM Color WHERE idColor = '${idColor}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar colores:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/color/:idColor', async (req, res) => {
+    const { idColor } = req.params;
+    const { nombreColor } = req.body;
+    console.log('MODIFICAR COLOR');
+    console.log(req.params);
+    console.log(req.body);
+
+    try {
+        const result = await sqlPool.request()
+            .input('IdColor', sql.Int, idColor)
+            .input('NombreColor', sql.VarChar, nombreColor)
+            .query('UPDATE Color set nombreColor = @NombreColor where idColor= @IdColor'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Color modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar el color' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro del vehículo:', err);
+            res.status(500).json({ message: err.message });
+        }
+
+})
 
 app.get('/combustible', async (req, res) => {
 
@@ -295,7 +370,7 @@ app.get('/tipoVehiculo', async (req, res) => {
 app.get('/transmision', async (req, res) => {
 
     console.log('SELECT TRANSMISIONES');
-   
+
     try {
 
         const result = await sqlPool.request()
@@ -445,30 +520,30 @@ app.put('/clientes/:id', async (req, res) => {
     console.log("MODIFICAR CLIENTE");
     console.log(req.params);
     console.log(req.body);
-  
+
     try {
-      const result = await sqlPool.request()
-        .input('ID', sql.Int, id)
-        .input('Nombre', sql.NVarChar, nombre)
-        .input('Apellidos', sql.NVarChar, apellidos)
-        .input('Identificacion', sql.VarChar, identificacion)
-        .input('Telefono', sql.VarChar, telefono)
-        .input('PaisResidencia', sql.VarChar, String(paisResidencia))
-        .input('Direccion', sql.NVarChar, direccion)
-        .input('TipoCliente', sql.NVarChar, String(tipoCliente))
-        .execute('ModificarCliente');
-      
-      if (result.rowsAffected[0] > 0) {
-        res.json({ message: 'Cliente modificado con éxito' });
-      } else {
-        res.status(404).send('Cliente no encontrado');
-      }
+        const result = await sqlPool.request()
+            .input('ID', sql.Int, id)
+            .input('Nombre', sql.NVarChar, nombre)
+            .input('Apellidos', sql.NVarChar, apellidos)
+            .input('Identificacion', sql.VarChar, identificacion)
+            .input('Telefono', sql.VarChar, telefono)
+            .input('PaisResidencia', sql.VarChar, String(paisResidencia))
+            .input('Direccion', sql.NVarChar, direccion)
+            .input('TipoCliente', sql.NVarChar, String(tipoCliente))
+            .execute('ModificarCliente');
+
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Cliente modificado con éxito' });
+        } else {
+            res.status(404).send('Cliente no encontrado');
+        }
     } catch (err) {
-      console.error('Error al modificar el cliente:', err);
-      res.status(500).json({ message: 'Error interno del servidor', details: err.message });
+        console.error('Error al modificar el cliente:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
     }
-  });
-  
+});
+
 
 
 
