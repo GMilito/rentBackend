@@ -189,12 +189,12 @@ app.put('/vehiculos/:id', async (req, res) => {
     try {
         const result = await sqlPool.request()
             .input('IDVehiculo', sql.VarChar, id)
-            .input('IDTipo', sql.Int, IDTipo)  // Assuming IDTipo is an integer. Adjust type accordingly.
-            .input('Color', sql.Int, Color)  // Adjust type accordingly if not an integer.
-            .input('TipoCombustible', sql.Int, TipoCombustible)  // Adjust type accordingly.
+            .input('IDTipo', sql.Int, IDTipo)  
+            .input('Color', sql.Int, Color) 
+            .input('TipoCombustible', sql.Int, TipoCombustible) 
             .input('Año', sql.Int, Año)
-            .input('Marca', sql.Int, Marca)  // Adjust type accordingly if not an integer.
-            .input('IdTransmision', sql.Int, IdTransmision)  // Adjust type accordingly.
+            .input('Marca', sql.Int, Marca) 
+            .input('IdTransmision', sql.Int, IdTransmision) 
             .input('Estado', sql.NVarChar, Estado)
             .execute('ModificarVehiculo');
 
@@ -241,7 +241,7 @@ app.get('/color', async (req, res) => {
             .query('SELECT * FROM Color');
 
         res.json(result.recordset);
-        console.log(result.recordset);
+       
     } catch (err) {
         console.error('Error al consultar colores:', err);
         res.status(500).json({ message: err.message });
