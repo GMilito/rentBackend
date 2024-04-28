@@ -159,6 +159,57 @@ app.get('/vehiculos', async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor.', details: err.message });
     }
 });
+app.get('/vehiculos/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await sqlPool.request()
+            .input('IDVehiculo', sql.VarChar, id)
+            .execute('ConsultarVehiculo'); // Ensure this stored procedure is designed to handle a single ID input
+
+        if (result.recordset.length > 0) {
+            res.json(result.recordset[0]); // Return only the first record for a specific ID
+        } else {
+            res.status(404).json({ message: 'Vehículo no encontrado' });
+        }
+    } catch (err) {
+        console.error('Error al consultar vehículo:', err);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+});
+
+app.put('/vehiculos/:id', async (req, res) => {
+    const { id } = req.params;
+    const { IDTipo, Color, TipoCombustible, Año, Marca, IdTransmision, Estado } = req.body;
+
+    console.log('MODIFICAR VEHICULO');
+    console.log(req.params);
+    console.log(req.body);
+
+    try {
+        const result = await sqlPool.request()
+            .input('IDVehiculo', sql.VarChar, id)
+            .input('IDTipo', sql.Int, IDTipo)  // Assuming IDTipo is an integer. Adjust type accordingly.
+            .input('Color', sql.Int, Color)  // Adjust type accordingly if not an integer.
+            .input('TipoCombustible', sql.Int, TipoCombustible)  // Adjust type accordingly.
+            .input('Año', sql.Int, Año)
+            .input('Marca', sql.Int, Marca)  // Adjust type accordingly if not an integer.
+            .input('IdTransmision', sql.Int, IdTransmision)  // Adjust type accordingly.
+            .input('Estado', sql.NVarChar, Estado)
+            .execute('ModificarVehiculo');
+
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Vehículo modificado exitosamente' });
+        } else {
+            res.status(404).json({ message: 'Vehículo no encontrado' });
+        }
+    } catch (err) {
+        console.error('Error al modificar el vehículo:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
+    }
+});
+
+
 
 
 
