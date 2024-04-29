@@ -607,12 +607,12 @@ app.post('/tipoVehiculo', async (req, res) => {
 
 
 app.delete('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
-    const { idTipoVehiculo } = req.params;
+    const { idTipo } = req.params;
     console.log("DELETE TIPO VEHICULO");
     console.log(idTipoVehiculo);
     try {
         const result = await sqlPool.request()
-            .query(`Delete from tipoVehiculo where idTipo = '${idTipoVehiculo}' `);
+            .query(`Delete from tipoVehiculo where idTipo = '${idTipo}' `);
         if (result.rowsAffected[0] > 0) {
             res.json({ message: 'Tipo vehiculo eliminado exitosamente' });
         } else {
@@ -626,11 +626,11 @@ app.delete('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
 });
 
 app.get('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
-    const {idTipoVehiculo} =req.params;
+    const {idTipo} =req.params;
     console.log('SELECT ToposVehiculos');
     try {
         const result = await sqlPool.request()
-            .query(`SELECT * FROM tipoVehiculo WHERE idTipo = '${idTipoVehiculo}'`);
+            .query(`SELECT * FROM tipoVehiculo WHERE idTipo = '${idTipo}'`);
         res.json(result.recordset);
         console.log(result.recordset);
     } catch (err) {
@@ -639,18 +639,18 @@ app.get('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
     }
 });
 
-app.put('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
-    const { idTipoVehiculo } = req.params;
+app.put('/tipoVehiculo/:idTipo', async (req, res) => {
+    const { idTipo } = req.params;
     const { nombre, montoPorHora } = req.body;
     console.log('MODIFICAR TIPOVEHICULO');
     console.log(req.params);
     console.log(req.body);
     try {
         const result = await sqlPool.request()
-            .input('IdTipoVehiculo', sql.Int, idTipoVehiculo)
+            .input('IdTipo', sql.Int, idTipo)
             .input('Nombre', sql.VarChar, nombre)
             .input('MontoPorHora', sql.VarChar, montoPorHora)
-            .query('UPDATE tipoVehiculo set nombre = @Nombre, montoPorHora =  @MontoPorHora where idTipoVehiculo= @IdTipoVehiculo'); 
+            .query('UPDATE tipoVehiculo set nombre = @Nombre, montoPorHora =  @MontoPorHora where idTipo= @IdTipo'); 
             if (result.rowsAffected[0] > 0) {
                 res.json({ message: 'Tipo Vehiculo modificado exitosamente' });
             } else {
