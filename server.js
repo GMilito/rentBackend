@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '1598753',
+    password: '*Tami123',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -480,37 +480,101 @@ app.put('/color/:idColor', async (req, res) => {
         }
 
 })
+// CRUD COMBUSTIBLE
+app.get('/combustibles', async (req, res) => {
 
-app.get('/combustible', async (req, res) => {
-
-    console.log('SELECT COMBUSTIBLE');
-
+    console.log('SELECT Combustibles');
     try {
-
         const result = await sqlPool.request()
             .query('SELECT * FROM Combustible');
 
         res.json(result.recordset);
+       
     } catch (err) {
         console.error('Error al consultar combustibles:', err);
         res.status(500).json({ message: err.message });
     }
 });
-app.get('/marca', async (req, res) => {
 
-    console.log('SELECT Marcas');
-
+app.post('/combustibles', async (req, res) => {
+    const { nombreCombustible } = req.body;
+    console.log('Insert combustible')
+    console.log(req.body);
     try {
-
         const result = await sqlPool.request()
-            .query('SELECT * FROM marca');
+            .query(`INSERT INTO Combustible (nombreCombustible) VALUES ('${nombreCombustible}')`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Combustible registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar el combustible' });
+        }
 
-        res.json(result.recordset);
+        console.log(result.recordset);
     } catch (err) {
-        console.error('Error al consultar marcas:', err);
+        console.error('Error al insertar combustibles:', err);
         res.status(500).json({ message: err.message });
     }
 });
+
+app.delete('/combustibles/:idCombustible', async (req, res) => {
+    const { idCombustible } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from Combustible where idCombustible = '${idCombustible}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Combustible eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar el combustible' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar combustibles:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/combustibles/:idCombustible', async (req, res) => {
+    const {idCombustible} =req.params;
+    console.log('SELECT Combustibles');
+    try {
+        const result = await sqlPool.request()
+            .query(`SELECT * FROM Combustible WHERE idCombustible = '${idCombustible}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar combustibles:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/combustibles/:idCombustible', async (req, res) => {
+    const { idCombustible } = req.params;
+    const { nombreCombustible } = req.body;
+    console.log('MODIFICAR Combustible');
+    console.log(req.params);
+    console.log(req.body);
+
+    try {
+        const result = await sqlPool.request()
+            .input('IdCombustible', sql.Int, idCombustible)
+            .input('NombreCombustible', sql.VarChar, nombreCombustible)
+            .query('UPDATE Combustible set nombreCombustible = @NombreCombustible where idCombustible= @IdCombustible'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Combustible modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar el combustible' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro del combustible:', err);
+            res.status(500).json({ message: err.message });
+        }
+
+})
+
+
+
+
+
 app.get('/tipoVehiculo', async (req, res) => {
 
     console.log('SELECT TIPOVEHICULOS');
