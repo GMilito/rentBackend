@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '*Tami123',
+    password: '1598753',
     database: 'RentCar',
     server: 'localhost',
     pool: {
