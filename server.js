@@ -587,13 +587,12 @@ app.get('/tipoVehiculo', async (req, res) => {
 });
 
 app.post('/tipoVehiculo', async (req, res) => {
-    const { nombre } = req.body;
-    const {montoPorHora}= req.body;
+    const { nombre, montoPorHora } = req.body;
     console.log('Insert TipoVehiculo')
     console.log(req.body);
     try {
         const result = await sqlPool.request()
-            .query(`INSERT INTO tipoVehiculo (nombre, montoPorHora) VALUES ('${nombre},'${montoPorHora}'`);
+            .query(`INSERT INTO tipoVehiculo (nombre, montoPorHora) VALUES ('${nombre}','${montoPorHora}'`);
         if (result.rowsAffected[0] > 0) {
             res.json({ message: 'Tipo de vehiculo registrado exitosamente' });
         } else {
