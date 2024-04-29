@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '1598753',
+    password: '*Tami123',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -714,39 +714,38 @@ app.delete('/transmision/:idTransmision', async (req, res) => {
     }
 });
 
-app.get('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
-    const {idTipoVehiculo} =req.params;
-    console.log('SELECT ToposVehiculos');
+app.get('/transmision/:idTransmision', async (req, res) => {
+    const {idTransmision} =req.params;
+    console.log('SELECT Transmision');
     try {
         const result = await sqlPool.request()
-            .query(`SELECT * FROM tipoVheiculo WHERE idTipoVehiculo = '${idTipoVehiculo}'`);
+            .query(`SELECT * FROM Transmision WHERE idTransmision = '${idTransmision}'`);
         res.json(result.recordset);
         console.log(result.recordset);
     } catch (err) {
-        console.error('Error al consultar tipo de vehiculo:', err);
+        console.error('Error al consultar la transmision:', err);
         res.status(500).json({ message: err.message });
     }
 });
 
-app.put('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
-    const { idTipoVehiculo } = req.params;
-    const { nombre, montoPorHora } = req.body;
-    console.log('MODIFICAR TIPOVEHICULO');
+app.put('/transmision/:idTransmision', async (req, res) => {
+    const { idTransmision } = req.params;
+    const { tipoTransmision } = req.body;
+    console.log('MODIFICAR Transmision');
     console.log(req.params);
     console.log(req.body);
     try {
         const result = await sqlPool.request()
-            .input('IdTipoVehiculo', sql.Int, idTipoVehiculo)
-            .input('Nombre', sql.VarChar, nombre)
-            .input('MontoPorHora', sql.VarChar, montoPorHora)
-            .query('UPDATE tipoVehiculo set nombre = @Nombre, montoPorHora =  @MontoPorHora where idTipoVehiculo= @IdTipoVehiculo'); 
+            .input('IdTransmision', sql.Int, idTransmision)
+            .input('TipoTransmision', sql.VarChar, tipoTransmision)
+            .query('UPDATE Trasnmision set tipoTransmision = @TipoTransmision, where idTransmision = @IdTransmision'); 
             if (result.rowsAffected[0] > 0) {
-                res.json({ message: 'Tipo Vehiculo modificado exitosamente' });
+                res.json({ message: 'Tipo Transmision modificado exitosamente' });
             } else {
-                res.status(400).json({ message: 'No se pudo modificar el tipo de vehiculo' });
+                res.status(400).json({ message: 'No se pudo modificar la transmsion' });
             }
         } catch (err) {
-            console.error('Error durante el registro del tipo del vehiculo:', err);
+            console.error('Error durante el registro de transmision:', err);
             res.status(500).json({ message: err.message });
         }
 })
