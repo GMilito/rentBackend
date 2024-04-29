@@ -217,9 +217,7 @@ app.put('/vehiculos/:id', async (req, res) => {
 //CATALOGOS
 //PAIS
 app.get('/paises', async (req, res) => {
-
     console.log('SELECT PAISES');
-
     try {
 
         const result = await sqlPool.request()
@@ -231,6 +229,92 @@ app.get('/paises', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+//MARCAS CRUD
+app.get('/marcas', async (req, res) => {
+    console.log('SELECT MARCAS');
+    try {
+        const result = await sqlPool.request()
+            .query('SELECT * FROM marca');
+        res.json(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar marcas:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+app.post('/marcas', async (req, res) => {
+    const { nombreMarca } = req.body;
+    console.log('Insert Marca')
+    console.log(req.body);
+    try {
+
+        const result = await sqlPool.request()
+            .query(`INSERT INTO marca (nombreMarca) VALUES ('${nombreMarca}')`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Marca registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar la marca' });
+        }
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al insertar marcas:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/marcas/:idMarca', async (req, res) => {
+    const { idMarca } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from marca where idMarca = '${idMarca}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Marca eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar la marca' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar marcas:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/marcas/:idMarca', async (req, res) => {
+    const {idMarca} =req.params;
+    console.log('SELECT MARCAS');
+    try {
+        const result = await sqlPool.request()
+            .query(`SELECT * FROM marca WHERE idMarca = '${idMarca}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar marcas:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/marcas/:idMarca', async (req, res) => {
+    const { idMarca } = req.params;
+    const { nombreMarca } = req.body;
+    console.log('MODIFICAR MARCA');
+    console.log(req.params);
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .input('IdMarca', sql.Int, idMarca)
+            .input('NombreMarca', sql.VarChar, nombreMarca)
+            .query('UPDATE marca set nombreMarca = @NombreMarca where idMarca= @IdMarca'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Marca modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar la marca' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro de la marca:', err);
+            res.status(500).json({ message: err.message });
+        }
+
+})
+//COLOR CRUD
 app.get('/color', async (req, res) => {
 
     console.log('SELECT COLORES');
