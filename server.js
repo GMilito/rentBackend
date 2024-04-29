@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '1598753',
+    password: '*Tami123',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -684,7 +684,7 @@ app.post('/transmision', async (req, res) => {
     console.log(req.body);
     try {
         const result = await sqlPool.request()
-            .query(`INSERT INTO Transmision (tipoTransmision) VALUES ('${tipoTransmision}'`);
+            .query(`INSERT INTO Transmision (tipoTransmision) VALUES ('${tipoTransmision}')`);
         if (result.rowsAffected[0] > 0) {
             res.json({ message: 'Transmision registrado exitosamente' });
         } else {
@@ -693,7 +693,7 @@ app.post('/transmision', async (req, res) => {
 
         console.log(result.recordset);
     } catch (err) {
-        console.error('Error al insertartransmision:', err);
+        console.error('Error al insertar transmision:', err);
         res.status(500).json({ message: err.message });
     }
 });
@@ -739,7 +739,7 @@ app.put('/transmision/:idTransmision', async (req, res) => {
         const result = await sqlPool.request()
             .input('IdTransmision', sql.Int, idTransmision)
             .input('TipoTransmision', sql.VarChar, tipoTransmision)
-            .query('UPDATE Trasnmision set tipoTransmision = @TipoTransmision, where idTransmision = @IdTransmision'); 
+            .query('UPDATE Transmision set tipoTransmision = @TipoTransmision WHERE idTransmision = @IdTransmision'); 
             if (result.rowsAffected[0] > 0) {
                 res.json({ message: 'Tipo Transmision modificado exitosamente' });
             } else {
