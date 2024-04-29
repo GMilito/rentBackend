@@ -573,14 +573,10 @@ app.put('/combustibles/:idCombustible', async (req, res) => {
 
 
 
-
-
+//CRUD TIPO VEHICULO 
 app.get('/tipoVehiculo', async (req, res) => {
-
     console.log('SELECT TIPOVEHICULOS');
-
     try {
-
         const result = await sqlPool.request()
             .query('SELECT * FROM tipoVehiculo');
         res.json(result.recordset);
@@ -589,21 +585,175 @@ app.get('/tipoVehiculo', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+
+app.post('/tipoVehiculo', async (req, res) => {
+    const { nombre } = req.body;
+    const {montoPorHora}= req.body;
+    console.log('Insert TipoVehiculo')
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .query(`INSERT INTO tipoVehiculo (nombre, montoPorHora) VALUES ('${nombre},'${montoPorHora}'`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tipo de vehiculo registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar el Tipo de vehiculo' });
+        }
+
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al insertar tipos de vehiculo:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
+    const { idTipoVehiculo } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from tipoVehiculo where idTipoVehiculo = '${idTipoVehiculo}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tipo vehiculo eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar el Tipo de Vehiculo' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar tipos de vehiculos:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
+    const {idTipoVehiculo} =req.params;
+    console.log('SELECT ToposVehiculos');
+    try {
+        const result = await sqlPool.request()
+            .query(`SELECT * FROM tipoVheiculo WHERE idTipoVehiculo = '${idTipoVehiculo}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar tipo de vehiculo:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
+    const { idTipoVehiculo } = req.params;
+    const { nombre, montoPorHora } = req.body;
+    console.log('MODIFICAR TIPOVEHICULO');
+    console.log(req.params);
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .input('IdTipoVehiculo', sql.Int, idTipoVehiculo)
+            .input('Nombre', sql.VarChar, nombre)
+            .input('MontoPorHora', sql.VarChar, montoPorHora)
+            .query('UPDATE tipoVehiculo set nombre = @Nombre, montoPorHora =  @MontoPorHora where idTipoVehiculo= @IdTipoVehiculo'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Tipo Vehiculo modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar el tipo de vehiculo' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro del tipo del vehiculo:', err);
+            res.status(500).json({ message: err.message });
+        }
+})
+// CRUD TRANSMISION 
 app.get('/transmision', async (req, res) => {
 
     console.log('SELECT TRANSMISIONES');
 
     try {
-
         const result = await sqlPool.request()
             .query('SELECT * FROM Transmision');
 
         res.json(result.recordset);
     } catch (err) {
-        console.error('Error al consultar paises:', err);
+        console.error('Error al consultar trasmision:', err);
         res.status(500).json({ message: err.message });
     }
 });
+
+
+app.post('/transmision', async (req, res) => {
+    const { tipoTransmision } = req.body;
+    console.log('Insert Transmision')
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .query(`INSERT INTO Transmision (tipoTransmision) VALUES ('${tipoTransmision}'`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Transmision registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar la transmision' });
+        }
+
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al insertartransmision:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/transmision/:idTransmision', async (req, res) => {
+    const { idTransmision } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from Transmision where idTransmision = '${idTransmision}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Transmision eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar la transmision' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar transimisiobessi:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
+    const {idTipoVehiculo} =req.params;
+    console.log('SELECT ToposVehiculos');
+    try {
+        const result = await sqlPool.request()
+            .query(`SELECT * FROM tipoVheiculo WHERE idTipoVehiculo = '${idTipoVehiculo}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar tipo de vehiculo:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
+    const { idTipoVehiculo } = req.params;
+    const { nombre, montoPorHora } = req.body;
+    console.log('MODIFICAR TIPOVEHICULO');
+    console.log(req.params);
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .input('IdTipoVehiculo', sql.Int, idTipoVehiculo)
+            .input('Nombre', sql.VarChar, nombre)
+            .input('MontoPorHora', sql.VarChar, montoPorHora)
+            .query('UPDATE tipoVehiculo set nombre = @Nombre, montoPorHora =  @MontoPorHora where idTipoVehiculo= @IdTipoVehiculo'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Tipo Vehiculo modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar el tipo de vehiculo' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro del tipo del vehiculo:', err);
+            res.status(500).json({ message: err.message });
+        }
+})
+
+
+
 app.get('/tipoClientes', async (req, res) => {
 
     console.log('SELECT tipoCliente');
@@ -742,7 +892,6 @@ app.put('/clientes/:id', async (req, res) => {
     console.log("MODIFICAR CLIENTE");
     console.log(req.params);
     console.log(req.body);
-
     try {
         const result = await sqlPool.request()
             .input('ID', sql.Int, id)
