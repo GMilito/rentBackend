@@ -974,7 +974,6 @@ app.get('/alquilerDetalles', async (req, res) => {
                     A.fechaAlquiler,
                     A.fechaEntrega,
                     A.idVehiculo,
-                  
                     A.monto,
                     A.idSeguro,
                     D.idDetallesAlquiler,
@@ -1002,18 +1001,16 @@ app.post('/realizarAlquiler', async (req, res) => {
     console.log('Received fechaEntrega:', fechaEntrega);
     console.log('Received horaEntrega:', horaEntrega);
     const fechaAlquiler = new Date();
-     // Split the date and time components
-     const dateParts = fechaEntrega.split('-'); // Assuming the date is in YYYY-MM-DD format
-     const timeParts = horaEntrega.split(':'); // Assuming time is in HH:MM format
+     const dateParts = fechaEntrega.split('-');
+     const timeParts = horaEntrega.split(':'); 
  
-     // Create a new Date object for entregaDateTime
+     
      const entregaDateTime = new Date(Date.UTC(
-         parseInt(dateParts[0], 10), // year
-         parseInt(dateParts[1], 10) - 1, // month (Month is 0-based, so subtract 1)
-         parseInt(dateParts[2], 10), // day
-         parseInt(timeParts[0], 10), // hour
-         parseInt(timeParts[1], 10), // minute
-         0 // second, can be omitted if not needed
+         parseInt(dateParts[0], 10), // año
+         parseInt(dateParts[1], 10) - 1, // mes (Mes empieza en 0 asi que se le resta 1)
+         parseInt(dateParts[2], 10), // dia
+         parseInt(timeParts[0], 10), // hora
+         parseInt(timeParts[1], 10), // minuto
      ));
     
     console.log('fechaAlquiler:', fechaAlquiler);
