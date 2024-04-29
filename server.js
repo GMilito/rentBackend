@@ -586,7 +586,6 @@ app.get('/tipoVehiculo', async (req, res) => {
     }
 });
 
-
 app.post('/tipoVehiculo', async (req, res) => {
     const { nombre } = req.body;
     const {montoPorHora}= req.body;
