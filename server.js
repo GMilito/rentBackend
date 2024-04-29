@@ -216,7 +216,7 @@ app.put('/vehiculos/:id', async (req, res) => {
 
 //CATALOGOS
 //PAIS
-app.get('/paises', async (req, res) => {
+app.get('/pais', async (req, res) => {
     console.log('SELECT PAISES');
     try {
 
@@ -229,6 +229,80 @@ app.get('/paises', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+app.post('/pais', async (req, res) => {
+    const { nombrePais } = req.body;
+    console.log('Insert Pais')
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .query(`INSERT INTO paisResidencia (nombrePais) VALUES ('${nombrePais}')`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Pais registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar el pais' });
+        }
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al insertar paises:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+app.delete('/pais/:idPais', async (req, res) => {
+    const { idPais } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from paisResidencia where idPais = '${idPais}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Pais eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar el pais' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar paises:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+app.get('/pais/:idPais', async (req, res) => {
+    const {idPais} =req.params;
+    console.log('SELECT Paises');
+    try {
+        const result = await sqlPool.request()
+            .query(`SELECT * FROM paisReferencia WHERE idPais = '${idPais}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar paises:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/pais/:idPais', async (req, res) => {
+    const { idPais } = req.params;
+    const { nombrePais } = req.body;
+    console.log('MODIFICAR Pais');
+    console.log(req.params);
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .input('IdPais', sql.Int, idPais)
+            .input('NombrePais', sql.VarChar, nombrePais)
+            .query('UPDATE paisResidencia set nombrePais = @NombrePais where idPais= @IdPais'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Pais modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar el pais' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro del pais:', err);
+            res.status(500).json({ message: err.message });
+        }
+
+})
+
+
 //MARCAS CRUD
 app.get('/marcas', async (req, res) => {
     console.log('SELECT MARCAS');
