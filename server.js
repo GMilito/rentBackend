@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '*Tami123',
+    password: '1598753',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -702,8 +702,73 @@ app.put('/clientes/:id', async (req, res) => {
     }
 });
 
+// ALQUILERES
 
+// ALQUILERES - Alquileres sin detalles de alquiler
+app.get('/alquiler', async (req, res) => {
+    try {
+        const result = await sqlPool.request()
+            .query(`
+                SELECT 
+                    A.idAlquiler,
+                    A.idCliente,
+                    A.fechaAlquiler,
+                    A.fechaEntrega,
+                    A.idVehiculo,
+                    A.idUsuario,
+                    A.monto,
+                    A.idSeguro
+                FROM 
+                    Alquiler A
+                LEFT JOIN 
+                    detallesAlquiler D ON A.idAlquiler = D.idAlquiler
+                WHERE 
+                    D.idDetallesAlquiler IS NULL
+            `);
 
+        if (result.recordset.length > 0) {
+            res.json(result.recordset);
+        } else {
+            res.status(404).json({ message: 'No se encontraron alquileres sin detalles.' });
+        }
+    } catch (err) {
+        console.error('Error al consultar alquileres sin detalles:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
+    }
+});
+
+// ALQUILERES - Detalles de alquiler
+app.get('/alquilerDetalles', async (req, res) => {
+    try {
+        const result = await sqlPool.request()
+            .query(`
+                SELECT 
+                    A.idAlquiler,
+                    A.idCliente,
+                    A.fechaAlquiler,
+                    A.fechaEntrega,
+                    A.idVehiculo,
+                    A.idUsuario,
+                    A.monto,
+                    A.idSeguro,
+                    D.idDetallesAlquiler,
+                    D.fechaDevolucion,
+                    D.montoTotal
+                FROM 
+                    Alquiler A
+                INNER JOIN 
+                    detallesAlquiler D ON A.idAlquiler = D.idAlquiler
+            `);
+        if (result.recordset.length > 0) {
+            res.json(result.recordset);
+        } else {
+            res.status(404).json({ message: 'No se encontraron detalles de alquiler.' });
+        }
+    } catch (err) {
+        console.error('Error al consultar los detalles de alquiler:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
+    }
+});
 
 
 
