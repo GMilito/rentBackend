@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '*Tami123',
+    password: '1598753',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -189,12 +189,12 @@ app.put('/vehiculos/:id', async (req, res) => {
     try {
         const result = await sqlPool.request()
             .input('IDVehiculo', sql.VarChar, id)
-            .input('IDTipo', sql.Int, IDTipo)  
-            .input('Color', sql.Int, Color) 
-            .input('TipoCombustible', sql.Int, TipoCombustible) 
+            .input('IDTipo', sql.Int, IDTipo)
+            .input('Color', sql.Int, Color)
+            .input('TipoCombustible', sql.Int, TipoCombustible)
             .input('Año', sql.Int, Año)
-            .input('Marca', sql.Int, Marca) 
-            .input('IdTransmision', sql.Int, IdTransmision) 
+            .input('Marca', sql.Int, Marca)
+            .input('IdTransmision', sql.Int, IdTransmision)
             .input('Estado', sql.NVarChar, Estado)
             .execute('ModificarVehiculo');
 
@@ -215,6 +215,20 @@ app.put('/vehiculos/:id', async (req, res) => {
 
 
 //CATALOGOS
+//SEGUROS
+app.get('/seguros', async (req, res) => {
+    console.log('SELECT seguros');
+    try {
+
+        const result = await sqlPool.request()
+            .query('SELECT * FROM Seguro');
+
+        res.json(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar seguros:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
 //PAIS
 app.get('/pais', async (req, res) => {
     console.log('SELECT PAISES');
@@ -266,7 +280,7 @@ app.delete('/pais/:idPais', async (req, res) => {
 
 
 app.get('/pais/:idPais', async (req, res) => {
-    const {idPais} =req.params;
+    const { idPais } = req.params;
     console.log('SELECT Paises');
     try {
         const result = await sqlPool.request()
@@ -289,16 +303,16 @@ app.put('/pais/:idPais', async (req, res) => {
         const result = await sqlPool.request()
             .input('IdPais', sql.Int, idPais)
             .input('NombrePais', sql.VarChar, nombrePais)
-            .query('UPDATE paisResidencia set nombrePais = @NombrePais where idPais= @IdPais'); 
-            if (result.rowsAffected[0] > 0) {
-                res.json({ message: 'Pais modificado exitosamente' });
-            } else {
-                res.status(400).json({ message: 'No se pudo modificar el pais' });
-            }
-        } catch (err) {
-            console.error('Error durante el registro del pais:', err);
-            res.status(500).json({ message: err.message });
+            .query('UPDATE paisResidencia set nombrePais = @NombrePais where idPais= @IdPais');
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Pais modificado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo modificar el pais' });
         }
+    } catch (err) {
+        console.error('Error durante el registro del pais:', err);
+        res.status(500).json({ message: err.message });
+    }
 
 })
 
@@ -353,7 +367,7 @@ app.delete('/marcas/:idMarca', async (req, res) => {
 });
 
 app.get('/marcas/:idMarca', async (req, res) => {
-    const {idMarca} =req.params;
+    const { idMarca } = req.params;
     console.log('SELECT MARCAS');
     try {
         const result = await sqlPool.request()
@@ -376,16 +390,16 @@ app.put('/marcas/:idMarca', async (req, res) => {
         const result = await sqlPool.request()
             .input('IdMarca', sql.Int, idMarca)
             .input('NombreMarca', sql.VarChar, nombreMarca)
-            .query('UPDATE marca set nombreMarca = @NombreMarca where idMarca= @IdMarca'); 
-            if (result.rowsAffected[0] > 0) {
-                res.json({ message: 'Marca modificado exitosamente' });
-            } else {
-                res.status(400).json({ message: 'No se pudo modificar la marca' });
-            }
-        } catch (err) {
-            console.error('Error durante el registro de la marca:', err);
-            res.status(500).json({ message: err.message });
+            .query('UPDATE marca set nombreMarca = @NombreMarca where idMarca= @IdMarca');
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Marca modificado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo modificar la marca' });
         }
+    } catch (err) {
+        console.error('Error durante el registro de la marca:', err);
+        res.status(500).json({ message: err.message });
+    }
 
 })
 //COLOR CRUD
@@ -397,7 +411,7 @@ app.get('/color', async (req, res) => {
             .query('SELECT * FROM Color');
 
         res.json(result.recordset);
-       
+
     } catch (err) {
         console.error('Error al consultar colores:', err);
         res.status(500).json({ message: err.message });
@@ -444,7 +458,7 @@ app.delete('/color/:idColor', async (req, res) => {
 });
 
 app.get('/color/:idColor', async (req, res) => {
-    const {idColor} =req.params;
+    const { idColor } = req.params;
     console.log('SELECT COLORES');
     try {
         const result = await sqlPool.request()
@@ -468,16 +482,16 @@ app.put('/color/:idColor', async (req, res) => {
         const result = await sqlPool.request()
             .input('IdColor', sql.Int, idColor)
             .input('NombreColor', sql.VarChar, nombreColor)
-            .query('UPDATE Color set nombreColor = @NombreColor where idColor= @IdColor'); 
-            if (result.rowsAffected[0] > 0) {
-                res.json({ message: 'Color modificado exitosamente' });
-            } else {
-                res.status(400).json({ message: 'No se pudo modificar el color' });
-            }
-        } catch (err) {
-            console.error('Error durante el registro del vehículo:', err);
-            res.status(500).json({ message: err.message });
+            .query('UPDATE Color set nombreColor = @NombreColor where idColor= @IdColor');
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Color modificado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo modificar el color' });
         }
+    } catch (err) {
+        console.error('Error durante el registro del vehículo:', err);
+        res.status(500).json({ message: err.message });
+    }
 
 })
 // CRUD COMBUSTIBLE
@@ -489,7 +503,7 @@ app.get('/combustibles', async (req, res) => {
             .query('SELECT * FROM Combustible');
 
         res.json(result.recordset);
-       
+
     } catch (err) {
         console.error('Error al consultar combustibles:', err);
         res.status(500).json({ message: err.message });
@@ -534,7 +548,7 @@ app.delete('/combustibles/:idCombustible', async (req, res) => {
 });
 
 app.get('/combustibles/:idCombustible', async (req, res) => {
-    const {idCombustible} =req.params;
+    const { idCombustible } = req.params;
     console.log('SELECT Combustibles');
     try {
         const result = await sqlPool.request()
@@ -558,16 +572,16 @@ app.put('/combustibles/:idCombustible', async (req, res) => {
         const result = await sqlPool.request()
             .input('IdCombustible', sql.Int, idCombustible)
             .input('NombreCombustible', sql.VarChar, nombreCombustible)
-            .query('UPDATE Combustible set nombreCombustible = @NombreCombustible where idCombustible= @IdCombustible'); 
-            if (result.rowsAffected[0] > 0) {
-                res.json({ message: 'Combustible modificado exitosamente' });
-            } else {
-                res.status(400).json({ message: 'No se pudo modificar el combustible' });
-            }
-        } catch (err) {
-            console.error('Error durante el registro del combustible:', err);
-            res.status(500).json({ message: err.message });
+            .query('UPDATE Combustible set nombreCombustible = @NombreCombustible where idCombustible= @IdCombustible');
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Combustible modificado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo modificar el combustible' });
         }
+    } catch (err) {
+        console.error('Error durante el registro del combustible:', err);
+        res.status(500).json({ message: err.message });
+    }
 
 })
 
@@ -589,8 +603,8 @@ app.post('/tipoVehiculo', async (req, res) => {
     try {
         const result = await sqlPool.request()
             .input('nombre', sql.VarChar, nombre)
-            .input('montoPorHora', sql.Decimal, montoPorHora)  
-            .query('INSERT INTO tipoVehiculo (nombre, montoPorHora) VALUES (@nombre, @montoPorHora)'); 
+            .input('montoPorHora', sql.Decimal, montoPorHora)
+            .query('INSERT INTO tipoVehiculo (nombre, montoPorHora) VALUES (@nombre, @montoPorHora)');
 
         if (result.rowsAffected[0] > 0) {
             res.json({ message: 'Tipo de vehiculo registrado exitosamente' });
@@ -624,7 +638,7 @@ app.delete('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
 });
 
 app.get('/tipoVehiculo/:idTipoVehiculo', async (req, res) => {
-    const {idTipo} =req.params;
+    const {idTipoVehiculo} =req.params;
     console.log('SELECT ToposVehiculos');
     try {
         const result = await sqlPool.request()
@@ -648,7 +662,7 @@ app.put('/tipoVehiculo/:idTipo', async (req, res) => {
             .input('IdTipo', sql.Int, idTipo)
             .input('Nombre', sql.VarChar, nombre)
             .input('MontoPorHora', sql.VarChar, montoPorHora)
-            .query('UPDATE tipoVehiculo set nombre = @Nombre, montoPorHora =  @MontoPorHora where idTipo= @IdTipo'); 
+            .query('UPDATE tipoVehiculo set nombre = @Nombre, montoPorHora =  @MontoPorHora where idTipoVehiculo= @IdTipoVehiculo'); 
             if (result.rowsAffected[0] > 0) {
                 res.json({ message: 'Tipo Vehiculo modificado exitosamente' });
             } else {
@@ -714,7 +728,7 @@ app.delete('/transmision/:idTransmision', async (req, res) => {
 });
 
 app.get('/transmision/:idTransmision', async (req, res) => {
-    const {idTransmision} =req.params;
+    const { idTransmision } = req.params;
     console.log('SELECT Transmision');
     try {
         const result = await sqlPool.request()
@@ -737,16 +751,16 @@ app.put('/transmision/:idTransmision', async (req, res) => {
         const result = await sqlPool.request()
             .input('IdTransmision', sql.Int, idTransmision)
             .input('TipoTransmision', sql.VarChar, tipoTransmision)
-            .query('UPDATE Transmision set tipoTransmision = @TipoTransmision WHERE idTransmision = @IdTransmision'); 
-            if (result.rowsAffected[0] > 0) {
-                res.json({ message: 'Tipo Transmision modificado exitosamente' });
-            } else {
-                res.status(400).json({ message: 'No se pudo modificar la transmsion' });
-            }
-        } catch (err) {
-            console.error('Error durante el registro de transmision:', err);
-            res.status(500).json({ message: err.message });
+            .query('UPDATE Transmision set tipoTransmision = @TipoTransmision WHERE idTransmision = @IdTransmision');
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tipo Transmision modificado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo modificar la transmsion' });
         }
+    } catch (err) {
+        console.error('Error durante el registro de transmision:', err);
+        res.status(500).json({ message: err.message });
+    }
 })
 
 // CRUD Seguro 
@@ -1014,7 +1028,7 @@ app.get('/alquiler', async (req, res) => {
                     A.fechaAlquiler,
                     A.fechaEntrega,
                     A.idVehiculo,
-                    A.idUsuario,
+                  
                     A.monto,
                     A.idSeguro
                 FROM 
@@ -1047,7 +1061,6 @@ app.get('/alquilerDetalles', async (req, res) => {
                     A.fechaAlquiler,
                     A.fechaEntrega,
                     A.idVehiculo,
-                    A.idUsuario,
                     A.monto,
                     A.idSeguro,
                     D.idDetallesAlquiler,
@@ -1068,6 +1081,123 @@ app.get('/alquilerDetalles', async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor', details: err.message });
     }
 });
+app.post('/realizarAlquiler', async (req, res) => {
+    const { idCliente, idVehiculo, fechaEntrega, horaEntrega, idSeguro } = req.body;
+    console.log("realizarAlquiler")
+    console.log(req.body)
+    console.log('Received fechaEntrega:', fechaEntrega);
+    console.log('Received horaEntrega:', horaEntrega);
+    const fechaAlquiler = new Date();
+     const partesFecha = fechaEntrega.split('-');
+     const partesHora = horaEntrega.split(':'); 
+ 
+     
+     const entregaDateTime = new Date(Date.UTC(
+         parseInt(partesFecha[0], 10), // año
+         parseInt(partesFecha[1], 10) - 1, // mes (Mes empieza en 0 asi que se le resta 1)
+         parseInt(partesFecha[2], 10), // dia
+         parseInt(partesHora[0], 10), // hora
+         parseInt(partesHora[1], 10), // minuto
+     ));
+    
+    console.log('fechaAlquiler:', fechaAlquiler);
+    console.log('entregaDateTime:', entregaDateTime);
+
+    if (isNaN(entregaDateTime.getTime())) {
+        return res.status(400).json({ message: 'fechaEntrega o horaEntrega Invalidas' });
+    }
+
+    const rentalHours = Math.abs(entregaDateTime - fechaAlquiler) / 36e5;
+
+    try {
+
+        const montoResult = await sqlPool.request()
+            .input('idVehiculo', sql.Int, idVehiculo)
+            .input('horas', sql.Int, Math.ceil(rentalHours))
+            .input('idSeguro', sql.Int, idSeguro || null)
+            .execute('CalcularCostoAlquiler');
+
+        const monto = montoResult.recordset[0].CostoTotal;
+        console.log('Ejecutando realizarAlquiler con los sig parametros:', {
+            idCliente,
+            fechaAlquiler: fechaAlquiler.toISOString(),
+            fechaEntrega: entregaDateTime.toISOString(),
+            idVehiculo,
+            monto,
+            idSeguro
+        });
+        const result = await sqlPool.request()
+            .input('idCliente', sql.Int, idCliente)
+            .input('fechaAlquiler', sql.DateTime, fechaAlquiler)
+            .input('fechaEntrega', sql.DateTime, entregaDateTime)
+            .input('idVehiculo', sql.Int, idVehiculo)
+            .input('monto', sql.Decimal(10, 2), monto)
+            .input('idSeguro', sql.Int, idSeguro)
+            .execute('RealizarAlquiler');
+
+            if (result.rowsAffected.length > 0) {
+                const idAlquiler = result.recordset[0].idAlquiler;  // Asumiendo que el SP devuelve esto
+                res.json({ message: 'Alquiler realizado exitosamente', idAlquiler });
+            } else {
+                res.status(400).json({ message: 'No se pudo realizar el alquiler' });
+            }
+    } catch (error) {
+        console.error('Error al realizar el alquiler:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+app.post('/finalizarAlquiler', async (req, res) => {
+    const { idAlquiler} = req.body;
+    const fechaDevolucion = new Date();
+    if (!idAlquiler || !fechaDevolucion) {
+        return res.status(400).json({ message: "Por favor, proporcione idAlquiler y fechaDevolucion." });
+    }
+
+    try {
+       
+        const devolucionDate = new Date(fechaDevolucion);
+
+        const result = await sqlPool.request()
+            .input('idAlquiler', sql.Int, idAlquiler)
+            .input('fechaDevolucion', sql.DateTime, devolucionDate)
+            .execute('FinalizarAlquiler');
+
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Alquiler finalizado correctamente', detalles: result.recordset });
+        } else {
+            res.status(404).json({ message: 'No se encontró el alquiler especificado o no se pudo actualizar.' });
+        }
+    } catch (err) {
+        console.error('Error al finalizar el alquiler:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
+    }
+});
+app.get('/generarReciboAlquiler/:idAlquiler', async (req, res) => {
+    const { idAlquiler } = req.params;
+    console.log("RECIBO")
+    if (!idAlquiler) {
+        return res.status(400).json({ message: "Por favor, proporcione el idAlquiler." });
+    }
+
+    try {
+        const result = await sqlPool.request()
+            .input('idAlquiler', sql.Int, idAlquiler)
+            .execute('GenerarReciboAlquiler');
+
+        if (result.recordset.length > 0) {
+            res.json({ message: 'Recibo generado correctamente', recibo: result.recordset[0] });
+            console.log("Recibo generado correctamente")
+        } else {
+            res.status(404).json({ message: 'No se encontró el alquiler especificado.' });
+        }
+    } catch (err) {
+        console.error('Error al generar el recibo de alquiler:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
+    }
+});
+
 
 
 
