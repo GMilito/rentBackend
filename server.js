@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '1598753',
+    password: '*Tami123',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -861,8 +861,8 @@ app.put('/seguro/:idSeguro', async (req, res) => {
 app.get('/tipoTarjetas', async (req, res) => {
     console.log('Obteniendo todos los tipos de tarjeta');
     try {
-      const pool = await sql.connect(config);
-      const result = await pool.request().query('SELECT * FROM TipoTarjeta');
+      const result = await sqlPool.request()
+      .query('SELECT * FROM TipoTarjeta');
       res.json(result.recordset);
     } catch (err) {
       console.error('Error al consultar tipos de tarjeta:', err);
@@ -875,8 +875,7 @@ app.get('/tipoTarjetas', async (req, res) => {
     const { tipo } = req.body;
     console.log('Insertando tipo de tarjeta:', tipo);
     try {
-      const pool = await sql.connect(config);
-      const result = await pool.request()
+      const result = await sqlPool.request()
         .input('tipo', sql.NVarChar, tipo)
         .query('INSERT INTO TipoTarjeta (tipo) VALUES (@tipo)');
       if (result.rowsAffected[0] > 0) {
@@ -895,8 +894,7 @@ app.get('/tipoTarjetas', async (req, res) => {
     const { idTipoTarjeta } = req.params;
     console.log('Eliminando tipo de tarjeta con ID:', idTipoTarjeta);
     try {
-      const pool = await sql.connect(config);
-      const result = await pool.request()
+      const result = await sqlPool.request()
         .input('idTipoTarjeta', sql.Int, idTipoTarjeta)
         .query('DELETE FROM TipoTarjeta WHERE idTipoTarjeta = @idTipoTarjeta');
       if (result.rowsAffected[0] > 0) {
@@ -904,6 +902,7 @@ app.get('/tipoTarjetas', async (req, res) => {
       } else {
         res.status(400).json({ message: 'No se pudo eliminar el tipo de tarjeta' });
       }
+      console.log(result.recordset);
     } catch (err) {
       console.error('Error al eliminar tipo de tarjeta:', err);
       res.status(500).json({ message: err.message });
@@ -915,11 +914,11 @@ app.get('/tipoTarjetas', async (req, res) => {
     const { idTipoTarjeta } = req.params;
     console.log('Obteniendo tipo de tarjeta con ID:', idTipoTarjeta);
     try {
-      const pool = await sql.connect(config);
-      const result = await pool.request()
+        const result = await sqlPool.request()
         .input('idTipoTarjeta', sql.Int, idTipoTarjeta)
         .query('SELECT * FROM TipoTarjeta WHERE idTipoTarjeta = @idTipoTarjeta');
       res.json(result.recordset);
+      console.log(result.recordset);
     } catch (err) {
       console.error('Error al obtener tipo de tarjeta por ID:', err);
       res.status(500).json({ message: err.message });
@@ -930,10 +929,11 @@ app.get('/tipoTarjetas', async (req, res) => {
   app.put('/tipoTarjetas/:idTipoTarjeta', async (req, res) => {
     const { idTipoTarjeta } = req.params;
     const { tipo } = req.body;
+    console.log(req.params);
+    console.log(req.body);
     console.log('Modificando tipo de tarjeta con ID:', idTipoTarjeta);
     try {
-      const pool = await sql.connect(config);
-      const result = await pool.request()
+        const result = await sqlPool.request()
         .input('idTipoTarjeta', sql.Int, idTipoTarjeta)
         .input('tipo', sql.NVarChar, tipo)
         .query('UPDATE TipoTarjeta SET tipo = @tipo WHERE idTipoTarjeta = @idTipoTarjeta');
@@ -953,7 +953,6 @@ app.get('/tipoTarjetas', async (req, res) => {
 app.get('/tipoClientes', async (req, res) => {
     console.log('SELECT tipoCliente');
     try {
-
         const result = await sqlPool.request()
             .query('SELECT * FROM TipoCliente');
         res.json(result.recordset);
