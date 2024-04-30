@@ -856,9 +856,7 @@ app.put('/seguro/:idSeguro', async (req, res) => {
 
 //CRUD TIPO CLIENTE
 app.get('/tipoClientes', async (req, res) => {
-
     console.log('SELECT tipoCliente');
-
     try {
 
         const result = await sqlPool.request()
@@ -869,6 +867,81 @@ app.get('/tipoClientes', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+app.post('/tipoClientes', async (req, res) => {
+    const { tipoCliente } = req.body;
+    console.log('Insert TipoCliente')
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .query(`INSERT INTO TipoCliente (tipoCliente) VALUES ('${tipoCliente}')`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tipo Cliente registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar el tipo Cliente' });
+        }
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al insertar tipo Cliente:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/tipoClientes/:idTipoCliente', async (req, res) => {
+    const { idTipoCliente } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from TipoCliente where idTipoCliente = '${idTipoCliente}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tipo Cliente eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar el tipo cliente' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar tipos clientes:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/tipoClientes/:idTipoCliente', async (req, res) => {
+    const {idTipoCliente} =req.params;
+    console.log('SELECT TIPO CLIENTE');
+    try {
+        const result = await sqlPool.request()
+        .query(`SELECT * FROM TipoCliente WHERE idTipoCliente = '${idTipoCliente}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar el tipo Cliente:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/tipoClientes/:idTipoCliente', async (req, res) => {
+    const { idTipoCliente } = req.params;
+    const { tipoCliente } = req.body;
+    console.log('MODIFICAR Tipo Cliente');
+    console.log(req.params);
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .input('IdTipo', sql.Int, idTipoCliente)
+            .input('TipoCliente', sql.VarChar, tipoCliente)
+            .query('UPDATE TipoCliente set tipoCliente = @TipoCliente WHERE idTipoCliente= @IdTipo'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Tipo Cliente modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar el tipo Cliente' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro de tipo Cliente:', err);
+            res.status(500).json({ message: err.message });
+        }
+})
+
+
+
 //CLIENTES
 //SELECT *
 app.get('/clientes', async (req, res) => {
