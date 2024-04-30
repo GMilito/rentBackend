@@ -571,8 +571,6 @@ app.put('/combustibles/:idCombustible', async (req, res) => {
 
 })
 
-
-
 //CRUD TIPO VEHICULO 
 app.get('/tipoVehiculo', async (req, res) => {
     console.log('SELECT TIPOVEHICULOS');
@@ -751,6 +749,95 @@ app.put('/transmision/:idTransmision', async (req, res) => {
         }
 })
 
+// CRUD Seguro 
+app.get('/seguro', async (req, res) => {
+
+    console.log('SELECT SEGUROS');
+
+    try {
+        const result = await sqlPool.request()
+            .query('SELECT * FROM Seguro');
+
+        res.json(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar seguro:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+app.post('/seguro', async (req, res) => {
+    const { tipoSeguro, montoSeguro } = req.body;
+    console.log('Insert Seguro')
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .query(`INSERT INTO Seguro (tipoSeguro, montoSeguro) VALUES ('${tipoSeguro}','${montoSeguro}')`);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Seguro registrado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar el seguro' });
+        }
+
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al insertar transmision:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/transmision/:idTransmision', async (req, res) => {
+    const { idTransmision } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .query(`Delete from Transmision where idTransmision = '${idTransmision}' `);
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Transmision eliminado exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo eliminar la transmision' });
+        }
+        console.log(result.recordset);
+    } catch (error) {
+        console.error('Error al borrar transimisiobessi:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/transmision/:idTransmision', async (req, res) => {
+    const {idTransmision} =req.params;
+    console.log('SELECT Transmision');
+    try {
+        const result = await sqlPool.request()
+            .query(`SELECT * FROM Transmision WHERE idTransmision = '${idTransmision}'`);
+        res.json(result.recordset);
+        console.log(result.recordset);
+    } catch (err) {
+        console.error('Error al consultar la transmision:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/transmision/:idTransmision', async (req, res) => {
+    const { idTransmision } = req.params;
+    const { tipoTransmision } = req.body;
+    console.log('MODIFICAR Transmision');
+    console.log(req.params);
+    console.log(req.body);
+    try {
+        const result = await sqlPool.request()
+            .input('IdTransmision', sql.Int, idTransmision)
+            .input('TipoTransmision', sql.VarChar, tipoTransmision)
+            .query('UPDATE Transmision set tipoTransmision = @TipoTransmision WHERE idTransmision = @IdTransmision'); 
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Tipo Transmision modificado exitosamente' });
+            } else {
+                res.status(400).json({ message: 'No se pudo modificar la transmsion' });
+            }
+        } catch (err) {
+            console.error('Error durante el registro de transmision:', err);
+            res.status(500).json({ message: err.message });
+        }
+})
 
 
 app.get('/tipoClientes', async (req, res) => {
