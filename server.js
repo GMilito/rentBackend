@@ -81,13 +81,14 @@ app.post('/login', async (req, res) => {
 
 //VEHICULOS
 app.post('/vehiculos', async (req, res) => {
-    const { idTipoVehiculo, idColor, idCombustible, año, idMarca, idTransmision,Placa, Estado = 'Disponible' } = req.body;
+    const { idTipoVehiculo, idColor, idCombustible, año, idMarca, idTransmision,placa , Estado = 'Disponible' } = req.body;
     console.log("INSERT VEHICULOS");
     console.log(req.body);
     console.log(idTipoVehiculo);
     console.log(idColor);
     console.log(idCombustible);
     console.log(año);
+    console.log("placa:"+placa);
     console.log(idMarca);
     console.log(idTransmision);
 
@@ -100,7 +101,7 @@ app.post('/vehiculos', async (req, res) => {
             .input('Año', sql.Int, año)
             .input('Marca', sql.NVarChar, idMarca)
             .input('IdTransmision', sql.NVarChar, idTransmision)
-            .input('Placa', sql.VarChar, Placa)
+            .input('Placa', sql.VarChar, placa)
             .input('Estado', sql.VarChar, Estado)
             .execute('RegistrarVehiculo');
 
@@ -187,7 +188,7 @@ app.put('/vehiculos/:id', async (req, res) => {
     console.log('MODIFICAR VEHICULO');
     console.log(req.params);
     console.log(req.body);
-
+    console.log("placa: "+Placa);
     try {
         const result = await sqlPool.request()
             .input('IDVehiculo', sql.VarChar, id)
