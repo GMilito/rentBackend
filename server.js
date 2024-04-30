@@ -935,11 +935,10 @@ app.put('/tipoClientes/:idTipoCliente', async (req, res) => {
                 res.status(400).json({ message: 'No se pudo modificar el tipo Cliente' });
             }
         } catch (err) {
-            console.error('Error durante el registro de tipo Cliente:', err);
+            console.error('Error durante el registro de tipo cliente:', err);
             res.status(500).json({ message: err.message });
         }
 })
-
 
 
 //CLIENTES
