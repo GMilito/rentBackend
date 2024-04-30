@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '*Tami123',
+    password: '1598753',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -81,7 +81,7 @@ app.post('/login', async (req, res) => {
 
 //VEHICULOS
 app.post('/vehiculos', async (req, res) => {
-    const { idTipoVehiculo, idColor, idCombustible, año, idMarca, idTransmision, Estado = 'Disponible' } = req.body;
+    const { idTipoVehiculo, idColor, idCombustible, año, idMarca, idTransmision,Placa, Estado = 'Disponible' } = req.body;
     console.log("INSERT VEHICULOS");
     console.log(req.body);
     console.log(idTipoVehiculo);
@@ -100,6 +100,7 @@ app.post('/vehiculos', async (req, res) => {
             .input('Año', sql.Int, año)
             .input('Marca', sql.NVarChar, idMarca)
             .input('IdTransmision', sql.NVarChar, idTransmision)
+            .input('Placa', sql.VarChar, Placa)
             .input('Estado', sql.VarChar, Estado)
             .execute('RegistrarVehiculo');
 
@@ -136,12 +137,13 @@ app.delete('/vehiculos/:id', async (req, res) => {
 });
 // VEHICULOS - Consultar vehículos
 app.get('/vehiculos', async (req, res) => {
-    const { estado, tipoVehiculo, marca, transmision, color, combustible } = req.query;
+    const { estado,placa, tipoVehiculo, marca, transmision, color, combustible } = req.query;
     console.log("SELECT VEHICULOS")
     console.log(req.query)
     try {
         const result = await sqlPool.request()
             .input('Estado', sql.NVarChar, estado || null)
+            .input('Placa', sql.NVarChar, placa || null)
             .input('TipoVehiculo', sql.NVarChar, tipoVehiculo || null)
             .input('Marca', sql.NVarChar, marca || null)
             .input('Transmision', sql.NVarChar, transmision || null)
@@ -180,7 +182,7 @@ app.get('/vehiculos/:id', async (req, res) => {
 
 app.put('/vehiculos/:id', async (req, res) => {
     const { id } = req.params;
-    const { IDTipo, Color, TipoCombustible, Año, Marca, IdTransmision, Estado } = req.body;
+    const { IDTipo, Color, TipoCombustible, Año, Marca, IdTransmision,Placa, Estado } = req.body;
 
     console.log('MODIFICAR VEHICULO');
     console.log(req.params);
@@ -195,6 +197,7 @@ app.put('/vehiculos/:id', async (req, res) => {
             .input('Año', sql.Int, Año)
             .input('Marca', sql.Int, Marca)
             .input('IdTransmision', sql.Int, IdTransmision)
+            .input('Placa', sql.NVarChar, Placa)
             .input('Estado', sql.NVarChar, Estado)
             .execute('ModificarVehiculo');
 
@@ -1044,7 +1047,7 @@ app.get('/clientes', async (req, res) => {
     try {
 
         const result = await sqlPool.request()
-            .input('Identificacion', sql.VarChar, identificacion || null)
+            .input('Identificacion', sql.BigInt, identificacion || null)
             .input('TipoCliente', sql.NVarChar, tipoCliente || null)
             .execute('ConsultarCliente');
 
@@ -1111,22 +1114,22 @@ app.post('/clientes', async (req, res) => {
     console.log('Direccion:', direccion);
     console.log('TipoCliente:', tipoCliente);
     try {
-
+        console.log('INSERT CLIENTE EXITOSO');
         const result = await sqlPool.request()
             .input('Nombre', sql.NVarChar, nombre)
             .input('Apellidos', sql.NVarChar, apellidos)
-            .input('Identificacion', sql.VarChar, identificacion)
+            .input('Identificacion', sql.BigInt, identificacion)
             .input('Telefono', sql.VarChar, telefono)
             .input('PaisResidencia', sql.VarChar, paisResidencia)
             .input('Direccion', sql.NVarChar, direccion)
             .input('TipoCliente', sql.NVarChar, tipoCliente)
             .execute('AgregarCliente');
 
-        res.json({ message: 'Cliente agregado exitosamente' });
+        res.json({ message: 'Cliente agregado exitosamente'});
     } catch (err) {
         console.error('Error al agregar el cliente:', err);
         if (err.number === 50000) {
-            res.status(400).json({ message: err.originalError.info.message });
+            res.status(400).json({ message: err.originalError.info.message});
         } else {
             res.status(500).json({ message: 'Error interno del servidor' });
         }
