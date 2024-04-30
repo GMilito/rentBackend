@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '*Tami123',
+    password: '1598753',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -1001,23 +1001,23 @@ app.post('/realizarAlquiler', async (req, res) => {
     console.log('Received fechaEntrega:', fechaEntrega);
     console.log('Received horaEntrega:', horaEntrega);
     const fechaAlquiler = new Date();
-     const dateParts = fechaEntrega.split('-');
-     const timeParts = horaEntrega.split(':'); 
+     const partesFecha = fechaEntrega.split('-');
+     const partesHora = horaEntrega.split(':'); 
  
      
      const entregaDateTime = new Date(Date.UTC(
-         parseInt(dateParts[0], 10), // año
-         parseInt(dateParts[1], 10) - 1, // mes (Mes empieza en 0 asi que se le resta 1)
-         parseInt(dateParts[2], 10), // dia
-         parseInt(timeParts[0], 10), // hora
-         parseInt(timeParts[1], 10), // minuto
+         parseInt(partesFecha[0], 10), // año
+         parseInt(partesFecha[1], 10) - 1, // mes (Mes empieza en 0 asi que se le resta 1)
+         parseInt(partesFecha[2], 10), // dia
+         parseInt(partesHora[0], 10), // hora
+         parseInt(partesHora[1], 10), // minuto
      ));
     
     console.log('fechaAlquiler:', fechaAlquiler);
     console.log('entregaDateTime:', entregaDateTime);
 
     if (isNaN(entregaDateTime.getTime())) {
-        return res.status(400).json({ message: 'Invalid fechaEntrega or horaEntrega' });
+        return res.status(400).json({ message: 'fechaEntrega o horaEntrega Invalidas' });
     }
 
     const rentalHours = Math.abs(entregaDateTime - fechaAlquiler) / 36e5;
@@ -1048,14 +1048,66 @@ app.post('/realizarAlquiler', async (req, res) => {
             .input('idSeguro', sql.Int, idSeguro)
             .execute('RealizarAlquiler');
 
-        if (result.rowsAffected.length > 0) {
-            res.json({ message: 'Alquiler realizado exitosamente', monto });
-        } else {
-            res.status(400).json({ message: 'No se pudo realizar el alquiler' });
-        }
+            if (result.rowsAffected.length > 0) {
+                const idAlquiler = result.recordset[0].idAlquiler;  // Asumiendo que el SP devuelve esto
+                res.json({ message: 'Alquiler realizado exitosamente', idAlquiler });
+            } else {
+                res.status(400).json({ message: 'No se pudo realizar el alquiler' });
+            }
     } catch (error) {
         console.error('Error al realizar el alquiler:', error);
         res.status(500).json({ message: error.message });
+    }
+});
+
+
+app.post('/finalizarAlquiler', async (req, res) => {
+    const { idAlquiler} = req.body;
+    const fechaDevolucion = new Date();
+    if (!idAlquiler || !fechaDevolucion) {
+        return res.status(400).json({ message: "Por favor, proporcione idAlquiler y fechaDevolucion." });
+    }
+
+    try {
+       
+        const devolucionDate = new Date(fechaDevolucion);
+
+        const result = await sqlPool.request()
+            .input('idAlquiler', sql.Int, idAlquiler)
+            .input('fechaDevolucion', sql.DateTime, devolucionDate)
+            .execute('FinalizarAlquiler');
+
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Alquiler finalizado correctamente', detalles: result.recordset });
+        } else {
+            res.status(404).json({ message: 'No se encontró el alquiler especificado o no se pudo actualizar.' });
+        }
+    } catch (err) {
+        console.error('Error al finalizar el alquiler:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
+    }
+});
+app.get('/generarReciboAlquiler/:idAlquiler', async (req, res) => {
+    const { idAlquiler } = req.params;
+    console.log("RECIBO")
+    if (!idAlquiler) {
+        return res.status(400).json({ message: "Por favor, proporcione el idAlquiler." });
+    }
+
+    try {
+        const result = await sqlPool.request()
+            .input('idAlquiler', sql.Int, idAlquiler)
+            .execute('GenerarReciboAlquiler');
+
+        if (result.recordset.length > 0) {
+            res.json({ message: 'Recibo generado correctamente', recibo: result.recordset[0] });
+            console.log("Recibo generado correctamente")
+        } else {
+            res.status(404).json({ message: 'No se encontró el alquiler especificado.' });
+        }
+    } catch (err) {
+        console.error('Error al generar el recibo de alquiler:', err);
+        res.status(500).json({ message: 'Error interno del servidor', details: err.message });
     }
 });
 
