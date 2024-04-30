@@ -1035,6 +1035,107 @@ app.put('/tipoClientes/:idTipoCliente', async (req, res) => {
         }
 })
 
+//CRUD TARJETA
+app.post('/tarjetas', async (req, res) => {
+    const { numeroTarjeta, PIN, CVV, fechaVencimiento, idCliente, idTipoTarjeta } = req.body;
+    console.log("INSERT Tarjetas");
+    console.log(req.body);
+    console.log(numeroTarjeta);
+    console.log(PIN);
+    console.log(CVV);
+    console.log(idCliente);
+    console.log(idTipoTarjeta);
+    try {
+        const result = await sqlPool.request()
+            .input('Numero', sql.Int, numeroTarjeta)
+            .input('Pin', sql.Int, PIN)
+            .input('Cvv', sql.Int, CVV)
+            .input('Fecha', sql.Date, fechaVencimiento)
+            .input('IdCliente', sql.Int, idCliente)
+            .input('IdTipoTarjeta', sql.Int, idTipoTarjeta)
+            .query('INSERT INTO Tarjetas (NumeroTarjeta, PIN, CVV, FechaVencimiento, idCliente, idTipoTarjeta) VALUES (@Numero, @Pin, @Cvv, @Fecha, @IdCliente, @IdTipoTarjeta)');
+        
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tarjeta registrada exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo registrar la tarjeta' });
+        }
+    } catch (err) {
+        console.error('Error durante el registro de la tarjeta:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+app.delete('/tarjetas/:numeroTarjeta', async (req, res) => {
+    const { numeroTarjeta } = req.params;
+    try {
+        const result = await sqlPool.request()
+            .input('Numero', sql.Int, numeroTarjeta)
+            .query('DELETE FROM Tarjeta WHERE numeroTarjeta = @Numero ');
+
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tarjeta eliminada exitosamente' });
+        } else {
+            res.status(404).json({ message: 'Tarjeta no encontrado' });
+        }
+    } catch (err) {
+        console.error('Error al eliminar la tarjeta:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+app.get('/tarjetas', async (req, res) => {
+    console.log('Obteniendo todas las tarjetas');
+    try {
+      const result = await sqlPool.request()
+      .query('SELECT * FROM Tarjetas');
+      res.json(result.recordset);
+    } catch (err) {
+      console.error('Error al consultar tarjetas:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+app.get('/tarjetas/:numeroTarjeta', async (req, res) => {
+    const { numeroTarjeta } = req.params;
+    console.log('Obteniendo tarjetas con ID:', numeroTarjeta);
+    try {
+        const result = await sqlPool.request()
+        .input('numeroTarjeta', sql.Int, numeroTarjeta)
+        .query('SELECT * FROM Tarjetas WHERE numeroTarjeta = @numeroTarjeta');
+      res.json(result.recordset);
+      console.log(result.recordset);
+    } catch (err) {
+      console.error('Error al obtener tarjeta por ID:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  app.put('/tarjetas/:numeroTarjeta', async (req, res) => {
+    const { numeroTarjeta } = req.params;
+    const { PIN, CVV, fechaVencimiento, idCliente, idTipoTarjeta } = req.body;
+    console.log(req.params);
+    console.log(req.body);
+    console.log('Modificando tarjeta con número:', numeroTarjeta);
+    try {
+        const result = await sqlPool.request()
+            .input('NumeroTarjeta', sql.NVarChar, numeroTarjeta)
+            .input('PIN', sql.Int, PIN)
+            .input('CVV', sql.Int, CVV)
+            .input('FechaVencimiento', sql.Date, fechaVencimiento)
+            .input('IdCliente', sql.Int, idCliente)
+            .input('IdTipoTarjeta', sql.Int, idTipoTarjeta)
+            .query('UPDATE Tarjetas SET PIN = @PIN, CVV = @CVV, FechaVencimiento = @FechaVencimiento, IdCliente = @IdCliente, IdTipoTarjeta = @IdTipoTarjeta WHERE NumeroTarjeta = @NumeroTarjeta');
+
+        if (result.rowsAffected[0] > 0) {
+            res.json({ message: 'Tarjeta modificada exitosamente' });
+        } else {
+            res.status(400).json({ message: 'No se pudo modificar la tarjeta' });
+        }
+    } catch (err) {
+        console.error('Error al modificar tarjeta:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
 
 
 //CLIENTES
