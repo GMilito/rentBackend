@@ -954,7 +954,7 @@ app.get('/clientes', async (req, res) => {
     try {
 
         const result = await sqlPool.request()
-            .input('Identificacion', sql.BigInt, identificacion || null)
+            .input('Identificacion', sql.NVarChar, identificacion || null)
             .input('TipoCliente', sql.NVarChar, tipoCliente || null)
             .execute('ConsultarCliente');
 
