@@ -856,6 +856,98 @@ app.put('/seguro/:idSeguro', async (req, res) => {
             res.status(500).json({ message: err.message });
         }
 })
+//CRUD TIPO TARJETA
+// Ruta para obtener todos los tipos de tarjeta
+app.get('/tipoTarjetas', async (req, res) => {
+    console.log('Obteniendo todos los tipos de tarjeta');
+    try {
+      const pool = await sql.connect(config);
+      const result = await pool.request().query('SELECT * FROM TipoTarjeta');
+      res.json(result.recordset);
+    } catch (err) {
+      console.error('Error al consultar tipos de tarjeta:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
+  // Ruta para agregar un nuevo tipo de tarjeta
+  app.post('/tipoTarjetas', async (req, res) => {
+    const { tipo } = req.body;
+    console.log('Insertando tipo de tarjeta:', tipo);
+    try {
+      const pool = await sql.connect(config);
+      const result = await pool.request()
+        .input('tipo', sql.NVarChar, tipo)
+        .query('INSERT INTO TipoTarjeta (tipo) VALUES (@tipo)');
+      if (result.rowsAffected[0] > 0) {
+        res.json({ message: 'Tipo de tarjeta registrado exitosamente' });
+      } else {
+        res.status(400).json({ message: 'No se pudo registrar el tipo de tarjeta' });
+      }
+    } catch (err) {
+      console.error('Error al insertar tipo de tarjeta:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
+  // Ruta para eliminar un tipo de tarjeta por su ID
+  app.delete('/tipoTarjetas/:idTipoTarjeta', async (req, res) => {
+    const { idTipoTarjeta } = req.params;
+    console.log('Eliminando tipo de tarjeta con ID:', idTipoTarjeta);
+    try {
+      const pool = await sql.connect(config);
+      const result = await pool.request()
+        .input('idTipoTarjeta', sql.Int, idTipoTarjeta)
+        .query('DELETE FROM TipoTarjeta WHERE idTipoTarjeta = @idTipoTarjeta');
+      if (result.rowsAffected[0] > 0) {
+        res.json({ message: 'Tipo de tarjeta eliminado exitosamente' });
+      } else {
+        res.status(400).json({ message: 'No se pudo eliminar el tipo de tarjeta' });
+      }
+    } catch (err) {
+      console.error('Error al eliminar tipo de tarjeta:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
+  // Ruta para obtener un tipo de tarjeta por su ID
+  app.get('/tipoTarjetas/:idTipoTarjeta', async (req, res) => {
+    const { idTipoTarjeta } = req.params;
+    console.log('Obteniendo tipo de tarjeta con ID:', idTipoTarjeta);
+    try {
+      const pool = await sql.connect(config);
+      const result = await pool.request()
+        .input('idTipoTarjeta', sql.Int, idTipoTarjeta)
+        .query('SELECT * FROM TipoTarjeta WHERE idTipoTarjeta = @idTipoTarjeta');
+      res.json(result.recordset);
+    } catch (err) {
+      console.error('Error al obtener tipo de tarjeta por ID:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
+  // Ruta para modificar un tipo de tarjeta por su ID
+  app.put('/tipoTarjetas/:idTipoTarjeta', async (req, res) => {
+    const { idTipoTarjeta } = req.params;
+    const { tipo } = req.body;
+    console.log('Modificando tipo de tarjeta con ID:', idTipoTarjeta);
+    try {
+      const pool = await sql.connect(config);
+      const result = await pool.request()
+        .input('idTipoTarjeta', sql.Int, idTipoTarjeta)
+        .input('tipo', sql.NVarChar, tipo)
+        .query('UPDATE TipoTarjeta SET tipo = @tipo WHERE idTipoTarjeta = @idTipoTarjeta');
+      if (result.rowsAffected[0] > 0) {
+        res.json({ message: 'Tipo de tarjeta modificado exitosamente' });
+      } else {
+        res.status(400).json({ message: 'No se pudo modificar el tipo de tarjeta' });
+      }
+    } catch (err) {
+      console.error('Error al modificar tipo de tarjeta:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
 
 //CRUD TIPO CLIENTE
 app.get('/tipoClientes', async (req, res) => {
@@ -942,6 +1034,7 @@ app.put('/tipoClientes/:idTipoCliente', async (req, res) => {
             res.status(500).json({ message: err.message });
         }
 })
+
 
 
 //CLIENTES
