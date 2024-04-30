@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '1598753',
+    password: '*Tami123',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -795,64 +795,65 @@ app.post('/seguro', async (req, res) => {
 
         console.log(result.recordset);
     } catch (err) {
-        console.error('Error al insertar transmision:', err);
+        console.error('Error al insertar seguros:', err);
         res.status(500).json({ message: err.message });
     }
 });
 
-app.delete('/transmision/:idTransmision', async (req, res) => {
-    const { idTransmision } = req.params;
+app.delete('/seguro/:idSeguro', async (req, res) => {
+    const { idSeguro } = req.params;
     try {
         const result = await sqlPool.request()
-            .query(`Delete from Transmision where idTransmision = '${idTransmision}' `);
+            .query(`Delete from Seguro where idSeguro = '${idSeguro}' `);
         if (result.rowsAffected[0] > 0) {
-            res.json({ message: 'Transmision eliminado exitosamente' });
+            res.json({ message: 'Seguro eliminado exitosamente' });
         } else {
-            res.status(400).json({ message: 'No se pudo eliminar la transmision' });
+            res.status(400).json({ message: 'No se pudo eliminar el seguro' });
         }
         console.log(result.recordset);
     } catch (error) {
-        console.error('Error al borrar transimisiobessi:', err);
+        console.error('Error al borrar seguros:', err);
         res.status(500).json({ message: err.message });
     }
 });
 
-app.get('/transmision/:idTransmision', async (req, res) => {
-    const {idTransmision} =req.params;
-    console.log('SELECT Transmision');
+app.get('/seguro/:idSeguro', async (req, res) => {
+    const {idSeguro} =req.params;
+    console.log('SELECT Seguro');
     try {
         const result = await sqlPool.request()
-            .query(`SELECT * FROM Transmision WHERE idTransmision = '${idTransmision}'`);
+        .query(`SELECT * FROM Seguro WHERE idSeguro = '${idSeguro}'`);
         res.json(result.recordset);
         console.log(result.recordset);
     } catch (err) {
-        console.error('Error al consultar la transmision:', err);
+        console.error('Error al consultar el seguro:', err);
         res.status(500).json({ message: err.message });
     }
 });
 
-app.put('/transmision/:idTransmision', async (req, res) => {
-    const { idTransmision } = req.params;
-    const { tipoTransmision } = req.body;
-    console.log('MODIFICAR Transmision');
+app.put('/seguro/:idSeguro', async (req, res) => {
+    const { idSeguro } = req.params;
+    const { tipoSeguro, montoSeguro } = req.body;
+    console.log('MODIFICAR Seguros');
     console.log(req.params);
     console.log(req.body);
     try {
         const result = await sqlPool.request()
-            .input('IdTransmision', sql.Int, idTransmision)
-            .input('TipoTransmision', sql.VarChar, tipoTransmision)
-            .query('UPDATE Transmision set tipoTransmision = @TipoTransmision WHERE idTransmision = @IdTransmision'); 
+            .input('IdSeguro', sql.Int, idSeguro)
+            .input('TipoSeguro', sql.VarChar, tipoSeguro)
+            .input('MontoSeguro', sql.Decimal, montoSeguro)
+            .query('UPDATE Seguro set tipoSeguro = @TipoSeguro, montoSeguro = @MontoSeguro WHERE idSeguro= @IdSeguro'); 
             if (result.rowsAffected[0] > 0) {
-                res.json({ message: 'Tipo Transmision modificado exitosamente' });
+                res.json({ message: 'Seguro modificado exitosamente' });
             } else {
-                res.status(400).json({ message: 'No se pudo modificar la transmsion' });
+                res.status(400).json({ message: 'No se pudo modificar la seguro' });
             }
         } catch (err) {
-            console.error('Error durante el registro de transmision:', err);
+            console.error('Error durante el registro de seguro:', err);
             res.status(500).json({ message: err.message });
         }
 })
-
+//CRUD TIPO CLIENTE
 
 app.get('/tipoClientes', async (req, res) => {
 
