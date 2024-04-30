@@ -16,7 +16,7 @@ app.use(express.json());
 
 const sqlConfig = {
     user: 'sa',
-    password: '*Tami123',
+    password: '1598753',
     database: 'RentCar',
     server: 'localhost',
     pool: {
@@ -1047,7 +1047,7 @@ app.post('/tarjetas', async (req, res) => {
     console.log(idTipoTarjeta);
     try {
         const result = await sqlPool.request()
-            .input('Numero', sql.Int, numeroTarjeta)
+            .input('Numero', sql.VarChar, numeroTarjeta)
             .input('Pin', sql.Int, PIN)
             .input('Cvv', sql.Int, CVV)
             .input('Fecha', sql.Date, fechaVencimiento)
@@ -1071,8 +1071,8 @@ app.delete('/tarjetas/:numeroTarjeta', async (req, res) => {
     const { numeroTarjeta } = req.params;
     try {
         const result = await sqlPool.request()
-            .input('Numero', sql.Int, numeroTarjeta)
-            .query('DELETE FROM Tarjeta WHERE numeroTarjeta = @Numero ');
+            .input('Numero', sql.VarChar, numeroTarjeta)
+            .query('DELETE FROM Tarjetas WHERE numeroTarjeta = @Numero ');
 
         if (result.rowsAffected[0] > 0) {
             res.json({ message: 'Tarjeta eliminada exitosamente' });
@@ -1096,15 +1096,39 @@ app.get('/tarjetas', async (req, res) => {
     }
   });
 
-app.get('/tarjetas/:numeroTarjeta', async (req, res) => {
+app.get('/tarjetas/:idCliente', async (req, res) => {
+    const { idCliente } = req.params;
+    console.log('Obteniendo tarjetas con ID:', idCliente);
+    try {
+        const result = await sqlPool.request()
+        .input('idCliente', sql.Int, idCliente)
+        .query('SELECT * FROM Tarjetas WHERE idCliente = @idCliente');
+        if (result.recordset.length > 0) {
+            res.json(result.recordset);
+            console.log(result.recordset);
+        } else {
+            res.status(404).json({ message: 'No se encontraron vehículos con los criterios especificados.' });
+        }
+      
+    } catch (err) {
+      console.error('Error al obtener tarjeta por ID:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  app.get('/tarjetas-s/:numeroTarjeta', async (req, res) => {
     const { numeroTarjeta } = req.params;
     console.log('Obteniendo tarjetas con ID:', numeroTarjeta);
     try {
         const result = await sqlPool.request()
-        .input('numeroTarjeta', sql.Int, numeroTarjeta)
-        .query('SELECT * FROM Tarjetas WHERE numeroTarjeta = @numeroTarjeta');
-      res.json(result.recordset);
-      console.log(result.recordset);
+        .input('numeroTarjeta', sql.VarChar, numeroTarjeta)
+        .query('SELECT * FROM Tarjetas WHERE NumeroTarjeta = @numeroTarjeta');
+        if (result.recordset.length > 0) {
+            res.json(result.recordset);
+            console.log(result.recordset);
+        } else {
+            res.status(404).json({ message: 'No se encontraron vehículos con los criterios especificados.' });
+        }
+      
     } catch (err) {
       console.error('Error al obtener tarjeta por ID:', err);
       res.status(500).json({ message: err.message });
@@ -1118,7 +1142,7 @@ app.get('/tarjetas/:numeroTarjeta', async (req, res) => {
     console.log('Modificando tarjeta con número:', numeroTarjeta);
     try {
         const result = await sqlPool.request()
-            .input('NumeroTarjeta', sql.NVarChar, numeroTarjeta)
+            .input('NumeroTarjeta', sql.VarChar, numeroTarjeta)
             .input('PIN', sql.Int, PIN)
             .input('CVV', sql.Int, CVV)
             .input('FechaVencimiento', sql.Date, fechaVencimiento)
