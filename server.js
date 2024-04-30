@@ -853,8 +853,8 @@ app.put('/seguro/:idSeguro', async (req, res) => {
             res.status(500).json({ message: err.message });
         }
 })
-//CRUD TIPO CLIENTE
 
+//CRUD TIPO CLIENTE
 app.get('/tipoClientes', async (req, res) => {
 
     console.log('SELECT tipoCliente');
@@ -869,7 +869,6 @@ app.get('/tipoClientes', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
 //CLIENTES
 //SELECT *
 app.get('/clientes', async (req, res) => {
